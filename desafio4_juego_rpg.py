@@ -1,3 +1,4 @@
+import argparse
 import time
 
 ROSCO = [
@@ -57,8 +58,15 @@ def jugar_ronda(pendientes, estados):
         print()
     return pasados
 
+parser = argparse.ArgumentParser(description='Rosco Bio - juego de preguntas sobre expresion genica')
+parser.add_argument('-n', '--nombre', default=None, help='Tu nombre')
+args = parser.parse_args()
+
 print()
-nombre = input('Como te llamás? ').strip() or 'Jugador'
+if args.nombre:
+    nombre = args.nombre
+else:
+    nombre = input('Como te llamás? ').strip() or 'Jugador'
 print(f'\nBienvenido/a al Rosco Bio, {nombre}!')
 print('Respondé cada pregunta o escribí "pp" para pasar.')
 input('\n[Enter para empezar]\n')
