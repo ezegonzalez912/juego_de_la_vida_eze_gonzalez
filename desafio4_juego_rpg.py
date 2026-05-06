@@ -2,26 +2,15 @@ import argparse
 import time
 
 ROSCO = [
-    ('A', 'Empieza por A: Una de las cuatro bases nitrogenadas del ADN, se empareja con la Timina.', 'ADENINA'),
-    ('B', 'Empieza por B: Virus que infecta bacterias, muy usado en investigacion genetica.', 'BACTERIOFAGO'),
-    ('C', 'Empieza por C: Triplete de nucleotidos del ARNm que codifica un aminoacido.', 'CODON'),
-    ('D', 'Empieza por D: Proceso por el cual el ADN se copia a si mismo antes de dividirse la celula.', 'DUPLICACION'),
-    ('E', 'Empieza por E: Secuencia codificante de un gen que se conserva en el ARNm maduro.', 'EXON'),
-    ('F', 'Empieza por F: Conjunto de caracteristicas observables de un organismo.', 'FENOTIPO'),
-    ('G', 'Empieza por G: Composicion genetica de un organismo, el conjunto de sus genes.', 'GENOTIPO'),
-    ('H', 'Empieza por H: Proteina alrededor de la cual se enrolla el ADN para compactarse en el nucleo.', 'HISTONA'),
-    ('I', 'Empieza por I: Secuencia no codificante de un gen que se elimina durante el splicing.', 'INTRON'),
-    ('L', 'Empieza por L: Enzima que une fragmentos de ADN, clave en la replicacion y reparacion.', 'LIGASA'),
-    ('M', 'Empieza por M: Cambio permanente en la secuencia del ADN de un organismo.', 'MUTACION'),
-    ('N', 'Empieza por N: Unidad basica del ADN y el ARN, formada por una base, un azucar y un fosfato.', 'NUCLEOTIDO'),
-    ('O', 'Empieza por O: Unidad funcional de regulacion genetica tipica de procariotas.', 'OPERON'),
-    ('P', 'Empieza por P: Region del ADN donde se une la ARN Polimerasa para iniciar la transcripcion.', 'PROMOTOR'),
-    ('R', 'Empieza por R: Organela celular donde ocurre la traduccion del ARNm a proteina.', 'RIBOSOMA'),
-    ('S', 'Empieza por S: Proceso de eliminacion de intrones y union de exones del ARNm.', 'SPLICING'),
-    ('T', 'Empieza por T: Proceso por el cual se sintetiza ARN a partir de una cadena molde de ADN.', 'TRANSCRIPCION'),
-    ('U', 'Empieza por U: Base nitrogenada del ARN que reemplaza a la Timina del ADN.', 'URACILO'),
-    ('V', 'Empieza por V: Molecula usada para introducir ADN exogeno en una celula huesped.', 'VECTOR'),
-    ('Z', 'Empieza por Z: Celula resultante de la fusion de un ovulo y un espermatozoide.', 'ZIGOTO'),
+    ('A', 'Empieza por A: Unidad basica que forma las proteinas. El codigo genetico especifica el orden en que se encadenan.', 'AMINOACIDO'),
+    ('C', 'Empieza por C: Triplete de nucleotidos del ARNm que especifica un aminoacido. Hay 64 combinaciones posibles.', 'CODON'),
+    ('D', 'Empieza por D: ___ central de la biologia molecular: el flujo de informacion va del ADN al ARN y de este a las proteinas.', 'DOGMA'),
+    ('E', 'Empieza por E: Secuencia codificante de un gen que se conserva en el ARNm maduro, a diferencia del intron que se elimina.', 'EXON'),
+    ('I', 'Empieza por I: Secuencia no codificante dentro de un gen que interrumpe la secuencia codificante y se elimina del ARNm.', 'INTRON'),
+    ('N', 'Empieza por N: Unidad basica del ADN y el ARN, formada por una base nitrogenada, un azucar y un grupo fosfato.', 'NUCLEOTIDO'),
+    ('P', 'Empieza por P: Region del ADN que contiene la caja TATA y donde se une la ARN Polimerasa II para iniciar la transcripcion.', 'PROMOTOR'),
+    ('R', 'Empieza por R: Organela donde el ARNm es decodificado para generar una cadena de aminoacidos durante la traduccion.', 'RIBOSOMA'),
+    ('T', 'Empieza por T: Primer paso de la expresion genica, ocurre en el nucleo y produce una molecula de ARNm a partir del ADN.', 'TRANSCRIPCION'),
 ]
 
 def mostrar_rosco(estados):
