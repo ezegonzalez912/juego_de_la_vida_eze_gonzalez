@@ -1,4 +1,3 @@
-import argparse
 import time
 
 def escribir(texto, delay=0.03):
@@ -18,12 +17,10 @@ def elegir(opciones):
         except ValueError:
             pass
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--nombre', default='Jugador')
-args = parser.parse_args()
-
 vida = 3
-nombre = args.nombre
+
+print()
+nombre = input('Como te llamás? ').strip() or 'Jugador'
 
 print()
 escribir(f'Sos {nombre}, una molecula de ARN Polimerasa II.')
