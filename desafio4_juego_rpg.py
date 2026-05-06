@@ -1,92 +1,94 @@
 import time
 
-def escribir(texto, delay=0.03):
-    for c in texto:
-        print(c, end='', flush=True)
-        time.sleep(delay)
-    print()
+ROSCO = [
+    ('A', 'Empieza por A: Una de las cuatro bases nitrogenadas del ADN, se empareja con la Timina.', 'ADENINA'),
+    ('B', 'Empieza por B: Virus que infecta bacterias, muy usado en investigacion genetica.', 'BACTERIOFAGO'),
+    ('C', 'Empieza por C: Triplete de nucleotidos del ARNm que codifica un aminoacido.', 'CODON'),
+    ('D', 'Empieza por D: Proceso por el cual el ADN se copia a si mismo antes de dividirse la celula.', 'DUPLICACION'),
+    ('E', 'Empieza por E: Secuencia codificante de un gen que se conserva en el ARNm maduro.', 'EXON'),
+    ('F', 'Empieza por F: Conjunto de caracteristicas observables de un organismo.', 'FENOTIPO'),
+    ('G', 'Empieza por G: Composicion genetica de un organismo, el conjunto de sus genes.', 'GENOTIPO'),
+    ('H', 'Empieza por H: Proteina alrededor de la cual se enrolla el ADN para compactarse en el nucleo.', 'HISTONA'),
+    ('I', 'Empieza por I: Secuencia no codificante de un gen que se elimina durante el splicing.', 'INTRON'),
+    ('L', 'Empieza por L: Enzima que une fragmentos de ADN, clave en la replicacion y reparacion.', 'LIGASA'),
+    ('M', 'Empieza por M: Cambio permanente en la secuencia del ADN de un organismo.', 'MUTACION'),
+    ('N', 'Empieza por N: Unidad basica del ADN y el ARN, formada por una base, un azucar y un fosfato.', 'NUCLEOTIDO'),
+    ('O', 'Empieza por O: Unidad funcional de regulacion genetica tipica de procariotas.', 'OPERON'),
+    ('P', 'Empieza por P: Region del ADN donde se une la ARN Polimerasa para iniciar la transcripcion.', 'PROMOTOR'),
+    ('R', 'Empieza por R: Organela celular donde ocurre la traduccion del ARNm a proteina.', 'RIBOSOMA'),
+    ('S', 'Empieza por S: Proceso de eliminacion de intrones y union de exones del ARNm.', 'SPLICING'),
+    ('T', 'Empieza por T: Proceso por el cual se sintetiza ARN a partir de una cadena molde de ADN.', 'TRANSCRIPCION'),
+    ('U', 'Empieza por U: Base nitrogenada del ARN que reemplaza a la Timina del ADN.', 'URACILO'),
+    ('V', 'Empieza por V: Molecula usada para introducir ADN exogeno en una celula huesped.', 'VECTOR'),
+    ('Z', 'Empieza por Z: Celula resultante de la fusion de un ovulo y un espermatozoide.', 'ZIGOTO'),
+]
 
-def elegir(opciones):
-    for i, op in enumerate(opciones, 1):
-        print(f'  [{i}] {op}')
-    while True:
-        try:
-            r = int(input('\n> '))
-            if 1 <= r <= len(opciones):
-                return r
-        except ValueError:
-            pass
+def mostrar_rosco(estados):
+    partes = []
+    for letra, estado in estados.items():
+        if estado == 'correcto':
+            partes.append(f'\033[92m{letra}✓\033[0m')
+        elif estado == 'incorrecto':
+            partes.append(f'\033[91m{letra}✗\033[0m')
+        elif estado == 'pasado':
+            partes.append(f'\033[93m{letra}?\033[0m')
+        else:
+            partes.append(letra)
+    print('\n ' + '  '.join(partes) + '\n')
 
-vida = 3
+def jugar_ronda(pendientes, estados):
+    pasados = []
+    for letra, pista, respuesta in pendientes:
+        mostrar_rosco(estados)
+        print(f'[{letra}] {pista}')
+        print('(escribi tu respuesta o "pp" para pasar)\n')
+        resp = input('> ').strip().upper()
+        if resp == 'PP':
+            estados[letra] = 'pasado'
+            pasados.append((letra, pista, respuesta))
+        elif resp == respuesta:
+            print('\n\033[92m¡Correcto!\033[0m')
+            estados[letra] = 'correcto'
+            time.sleep(1)
+        else:
+            print(f'\n\033[91mIncorrecto. Era: {respuesta}\033[0m')
+            estados[letra] = 'incorrecto'
+            time.sleep(1.5)
+        print()
+    return pasados
 
 print()
 nombre = input('Como te llamás? ').strip() or 'Jugador'
+print(f'\nBienvenido/a al Rosco Bio, {nombre}!')
+print('Respondé cada pregunta o escribí "pp" para pasar.')
+input('\n[Enter para empezar]\n')
 
-print()
-escribir(f'Sos {nombre}, una molecula de ARN Polimerasa II.')
-escribir('Tu mision: llegar al gen de la insulina y transcribirlo.')
-escribir('El nucleo es un laberinto y el tiempo corre...')
-input('\n[Enter para comenzar]\n')
+estados = {letra: 'pendiente' for letra, _, _ in ROSCO}
+pendientes = list(ROSCO)
 
-# --- escena 1 ---
-print('='*50)
-escribir('\nLlegas a la cromatina. El gen esta empaquetado y no podes leerlo.')
-escribir('Un complejo de histonas bloquea el acceso.\n')
-r = elegir([
-    'Esperas a que los factores de remodelacion abran la cromatina',
-    'Intentas forzar el paso tu sola'
-])
-if r == 1:
-    escribir('\nLos factores de remodelacion actuan y la cromatina se abre.')
-    escribir('Encontras la region promotora: TATAAA.')
+while pendientes:
+    pendientes = jugar_ronda(pendientes, estados)
+    if pendientes:
+        mostrar_rosco(estados)
+        print(f'Te quedan {len(pendientes)} sin responder.')
+        continuar = input('¿Seguís con los que pasaste? (s/n) > ').strip().lower()
+        if continuar != 's':
+            for letra, _, _ in pendientes:
+                estados[letra] = 'incorrecto'
+            break
+
+correctas = sum(1 for e in estados.values() if e == 'correcto')
+total = len(ROSCO)
+
+mostrar_rosco(estados)
+print(f'{nombre}: {correctas}/{total} correctas\n')
+
+if correctas == total:
+    print('¡Rosco completo! Sos un crack de la biologia molecular.')
+elif correctas >= total * 0.7:
+    print('Muy bien! Dominas la mayoria de los conceptos.')
+elif correctas >= total * 0.4:
+    print('Bien, pero hay conceptos para repasar.')
 else:
-    escribir('\nLa cromatina resiste. Perdes tiempo y una unidad de energia.')
-    escribir('Terminas esperando igual... pero con un golpe en el orgullo.')
-    vida -= 1
-
-# --- escena 2 ---
-print('\n' + '='*50)
-escribir('\nEstas leyendo el molde de ADN y sintetizando el ARNm.')
-escribir('De repente aparece un intrón disfrazado de exón.')
-escribir('Quiere colarse en tu ARNm.\n')
-r = elegir([
-    'Lo dejas pasar, total despues se encarga el spliceosoma',
-    'Lo identificas y lo marcas para que el spliceosoma lo elimine'
-])
-if r == 1:
-    escribir('\nBuena decision estrategica. El spliceosoma corta el intron mas tarde.')
-    escribir('El ARNm queda limpio igual.')
-elif r == 2:
-    escribir('\nExcelente. El ARNm sale del nucleo sin intrones, listo para traducirse.')
-
-# --- escena 3 ---
-print('\n' + '='*50)
-escribir('\nEl ARNm cruza el poro nuclear y llega al ribosoma.')
-escribir('Empieza la traduccion. Todo va bien hasta que...')
-escribir('aparece un ARN de transferencia con el aminoacido EQUIVOCADO.\n')
-r = elegir([
-    'Confias en el ribosoma, el solo va a rechazar el tARN incorrecto',
-    'Entras en panico y detenes la traduccion'
-])
-if r == 1:
-    escribir('\nCorrecto. El ribosoma verifica el apareamiento de bases.')
-    escribir('El tARN incorrecto no encaja y se va. La proteina se sintetiza bien.')
-elif r == 2:
-    escribir('\nLa traduccion se corta. La proteina queda incompleta y se degrada.')
-    escribir('Hay que empezar de nuevo desde el ARNm.')
-    vida -= 1
-
-# --- escena final ---
-print('\n' + '='*50)
-escribir('\nEl codon STOP aparece en el ribosoma: UAA.')
-escribir('La insulina esta lista. El ribosoma libera la proteina.')
+    print('A repasar el dogma central... ¡la proxima va mejor!')
 print()
-
-if vida == 3:
-    escribir('Completaste la expresion genica sin errores. La celula te lo agradece.')
-elif vida == 2:
-    escribir('La insulina llego a destino, con algun tropiezo en el camino.')
-else:
-    escribir('La insulina existe, pero el camino estuvo lleno de obstaculos.')
-
-print('\nADN -> transcripcion -> ARNm -> splicing -> traduccion -> Proteina\n')
