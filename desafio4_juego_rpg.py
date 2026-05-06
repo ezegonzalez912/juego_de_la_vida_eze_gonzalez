@@ -13,7 +13,7 @@ ROSCO = [
     ('T', 'Empieza por T: Primer paso de la expresion genica, ocurre en el nucleo y produce una molecula de ARNm a partir del ADN.', 'TRANSCRIPCION'),
 ]
 
-def mostrar_rosco(estados):
+def mostrar_rosco(estados, tiempo_restante):
     partes = []
     for letra, estado in estados.items():
         if estado == 'correcto':
@@ -24,15 +24,33 @@ def mostrar_rosco(estados):
             partes.append(f'\033[93m{letra}?\033[0m')
         else:
             partes.append(letra)
-    print('\n ' + '  '.join(partes) + '\n')
+    mins = int(tiempo_restante) // 60
+    segs = int(tiempo_restante) % 60
+    print('\n ' + '  '.join(partes) + f'        ⏱  {mins:02d}:{segs:02d}\n')
 
-def jugar_ronda(pendientes, estados):
+def tiempo_restante(inicio, limite):
+    return max(0, limite - (time.time() - inicio))
+
+def jugar_ronda(pendientes, estados, inicio, limite):
     pasados = []
     for letra, pista, respuesta in pendientes:
-        mostrar_rosco(estados)
+        restante = tiempo_restante(inicio, limite)
+        if restante == 0:
+            print('\n\033[91m¡Se acabó el tiempo!\033[0m\n')
+            for l, _, _ in pendientes:
+                if estados[l] == 'pendiente' or estados[l] == 'pasado':
+                    estados[l] = 'incorrecto'
+            return []
+        mostrar_rosco(estados, restante)
         print(f'[{letra}] {pista}')
         print('(escribi tu respuesta o "pp" para pasar)\n')
         resp = input('> ').strip().upper()
+        if tiempo_restante(inicio, limite) == 0:
+            print('\n\033[91m¡Se acabó el tiempo!\033[0m\n')
+            for l, _, _ in pendientes:
+                if estados[l] == 'pendiente' or estados[l] == 'pasado':
+                    estados[l] = 'incorrecto'
+            return []
         if resp == 'PP':
             estados[letra] = 'pasado'
             pasados.append((letra, pista, respuesta))
@@ -56,17 +74,33 @@ if args.nombre:
     nombre = args.nombre
 else:
     nombre = input('Como te llamás? ').strip() or 'Jugador'
-print(f'\nBienvenido/a al Rosco Bio, {nombre}!')
+
+while True:
+    try:
+        minutos = int(input('Cuantos minutos queres jugar? '))
+        if minutos > 0:
+            break
+    except ValueError:
+        pass
+    print('Ingresa un numero valido.')
+
+limite = minutos * 60
+
+print(f'\nBienvenido/a al Rosco Bio, {nombre}! Tenes {minutos} minuto(s).')
 print('Respondé cada pregunta o escribí "pp" para pasar.')
 input('\n[Enter para empezar]\n')
 
+inicio = time.time()
 estados = {letra: 'pendiente' for letra, _, _ in ROSCO}
 pendientes = list(ROSCO)
 
 while pendientes:
-    pendientes = jugar_ronda(pendientes, estados)
+    pendientes = jugar_ronda(pendientes, estados, inicio, limite)
     if pendientes:
-        mostrar_rosco(estados)
+        restante = tiempo_restante(inicio, limite)
+        if restante == 0:
+            break
+        mostrar_rosco(estados, restante)
         print(f'Te quedan {len(pendientes)} sin responder.')
         continuar = input('¿Seguís con los que pasaste? (s/n) > ').strip().lower()
         if continuar != 's':
@@ -76,9 +110,12 @@ while pendientes:
 
 correctas = sum(1 for e in estados.values() if e == 'correcto')
 total = len(ROSCO)
+usado = int(time.time() - inicio)
+mins_usado = usado // 60
+segs_usado = usado % 60
 
-mostrar_rosco(estados)
-print(f'{nombre}: {correctas}/{total} correctas\n')
+mostrar_rosco(estados, 0)
+print(f'{nombre}: {correctas}/{total} correctas  |  Tiempo usado: {mins_usado:02d}:{segs_usado:02d}\n')
 
 if correctas == total:
     print('¡Rosco completo! Sos un crack de la biologia molecular.')
